@@ -49,9 +49,7 @@ describe Parslet::Slice do
         expect(slice.offset).to eq(6)
       end
       it 'should fail to return a line and column' do
-        expect {
-          slice.line_and_column
-        }.to raise_error(ArgumentError)
+        expect { slice.line_and_column }.to raise_error(ArgumentError)
       end
 
       context 'when constructed with a source' do
@@ -76,14 +74,17 @@ describe Parslet::Slice do
           expect(md.captures.first).to eq('o')
         end
       end
+
       describe '<- #size' do
         subject { slice.size }
         it { is_expected.to eq(6) }
       end
+
       describe '<- #length' do
         subject { slice.length }
         it { is_expected.to eq(6) }
       end
+
       describe '<- #+' do
         let(:other) { cslice('baz', 10) }
         subject { slice + other }
@@ -95,36 +96,51 @@ describe Parslet::Slice do
         end
       end
     end
+
     describe 'conversion' do
       describe '<- #to_slice' do
         it 'should return self' do
           expect(slice.to_slice).to eq(slice)
         end
       end
+
       describe '<- #to_sym' do
         it 'should return :foobar' do
           expect(slice.to_sym).to eq(:foobar)
         end
       end
+
       describe 'cast to Float' do
         it 'should return a float' do
           expect(Float(cslice('1.345', 11))).to eq(1.345)
         end
       end
+
       describe 'cast to Integer' do
         it 'should cast to integer as a string would' do
           s = cslice('1234', 40)
           expect(Integer(s)).to eq(1234)
           expect(s.to_i).to eq(1234)
         end
+
         it 'should fail when Integer would fail on a string' do
-          expect { Integer(slice) }.to raise_error(ArgumentError, /invalid value/)
+          # In 2.6, Integer was changed to take an :exception parameter which
+          # defines the failure behavior. The new default behavior is to return
+          # nil instead of raising an exception, unless to_i is defined, in which
+          # case it will fall back to calling that first.
+          if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6.0-preview3')
+            expect(Integer(slice)).to eq(0)
+          else
+            expect { Integer(slice) }.to raise_error(ArgumentError, /invalid value/)
+          end
         end
+
         it 'should turn into zero when a string would' do
           expect(slice.to_i).to eq(0)
         end
       end
     end
+
     describe 'inspection and string conversion' do
       describe '#inspect' do
         subject { slice.inspect }

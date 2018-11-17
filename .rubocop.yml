@@ -14,3 +14,6 @@ Style/AccessModifierDeclarations:
 
 Metrics/LineLength:
   Max: 150
+
+Layout/TrailingWhitespace:
+  Enabled: false
