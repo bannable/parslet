@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 # A slice is a small part from the parse input. A slice mainly behaves like
 # any other string, except that it remembers where it came from (offset in
@@ -22,89 +23,93 @@
 # These omissions are somewhat intentional. Rather than maintaining a full
 # delegation, we opt for a partial emulation that gets the job done.
 #
-class Parslet::Slice
-  attr_reader :str
-  attr_reader :position
-  attr_reader :line_cache
+module Parslet
+  class Slice
+    attr_reader :str
+    attr_reader :position
+    attr_reader :line_cache
 
-  # Construct a slice using a string, an offset and an optional line cache. 
-  # The line cache should be able to answer to the #line_and_column message. 
-  #
-  def initialize(position, string, line_cache=nil)
-    @position = position
-    @str = string
-    @line_cache = line_cache
-  end
+    # Construct a slice using a string, an offset and an optional line cache.
+    # The line cache should be able to answer to the #line_and_column message.
+    #
+    def initialize(position, string, line_cache = nil)
+      @position = position
+      @str = string
+      @line_cache = line_cache
+    end
 
-  def offset
-    @position.charpos
-  end
+    def offset
+      @position.charpos
+    end
 
-  # Compares slices to other slices or strings.
-  #
-  def == other
-    str == other
-  end
+    # Compares slices to other slices or strings.
+    #
+    def ==(other)
+      str == other
+    end
 
-  # Match regular expressions.
-  #
-  def match(regexp)
-    str.match(regexp)
-  end
+    # Match regular expressions.
+    #
+    def match(regexp)
+      str.match(regexp)
+    end
 
-  # Returns the slices size in characters.
-  #
-  def size
-    str.size
-  end
+    # Returns the slices size in characters.
+    #
+    def size
+      str.size
+    end
 
-  alias length size
-  
-  # Concatenate two slices; it is assumed that the second slice begins 
-  # where the first one ends. The offset of the resulting slice is the same
-  # as the one of this slice. 
-  #
-  def +(other)
-    self.class.new(@position, str + other.to_s, line_cache)
-  end
+    alias length size
 
-  # Returns a <line, column> tuple referring to the original input.
-  #
-  def line_and_column
-    raise ArgumentError, "No line cache was given, cannot infer line and column." \
-      unless line_cache
+    # Concatenate two slices; it is assumed that the second slice begins
+    # where the first one ends. The offset of the resulting slice is the same
+    # as the one of this slice.
+    #
+    def +(other)
+      self.class.new(@position, str + other.to_s, line_cache)
+    end
 
-    line_cache.line_and_column(@position.bytepos)
-  end
+    # Returns a <line, column> tuple referring to the original input.
+    #
+    def line_and_column
+      raise ArgumentError, 'No line cache was given, cannot infer line and column.' \
+        unless line_cache
 
+      line_cache.line_and_column(@position.bytepos)
+    end
 
-  # Conversion operators -----------------------------------------------------
-  def to_str
-    str
-  end
-  alias to_s to_str
+    # Conversion operators -----------------------------------------------------
+    def to_str
+      str
+    end
+    alias to_s to_str
 
-  def to_slice
-    self
-  end
-  def to_sym
-    str.to_sym
-  end
-  def to_int
-    Integer(str)
-  end
-  def to_i
-    str.to_i
-  end
-  def to_f
-    str.to_f
-  end
+    def to_slice
+      self
+    end
 
-  # Inspection & Debugging ---------------------------------------------------
+    def to_sym
+      str.to_sym
+    end
 
-  # Prints the slice as <code>"string"@offset</code>.
-  def inspect
+    def to_int
+      Integer(str)
+    end
 
-    str.inspect + "@#{offset}"
+    def to_i
+      str.to_i
+    end
+
+    def to_f
+      str.to_f
+    end
+
+    # Inspection & Debugging ---------------------------------------------------
+
+    # Prints the slice as <code>"string"@offset</code>.
+    def inspect
+      str.inspect + "@#{offset}"
+    end
   end
 end

@@ -1,12 +1,14 @@
-source "https://rubygems.org"
+# frozen_string_literal: true
 
-gem "middleman"
+source 'https://rubygems.org'
+
+gem 'middleman'
 gem 'rb-fsevent'
 gem 'RedCloth'
 gem 'slim'
 
-gem 'cod'
 gem 'case'
+gem 'cod'
 gem 'text-highlight'
 
 gem 'parslet'

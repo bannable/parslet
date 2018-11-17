@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 require 'parslet'
 
@@ -5,22 +6,20 @@ require 'parslet'
 # all chars until a given string (absent) is encountered.
 #
 class GobbleUp < Parslet::Atoms::Base
-  def initialize absent, min_chars=0
+  def initialize(absent, min_chars = 0)
     @absent = absent
     @min_chars = min_chars
   end
 
-  def try(source, context, consume_all)
+  def try(source, context, _consume_all)
     excluding_length = source.chars_until(@absent)
 
-    if excluding_length >= @min_chars
-      return succ(source.consume(excluding_length))
-    else
-      return context.err(self, source, "No such string in input: #{@absent.inspect}.")
-    end
+    return succ(source.consume(excluding_length)) if excluding_length >= @min_chars
+
+    context.err(self, source, "No such string in input: #{@absent.inspect}.")
   end
 
-  def to_s_inner(prec)
+  def to_s_inner(_prec)
     "until('#{@absent}')"
   end
 end

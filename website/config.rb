@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'slim'
 require 'tilt'
 require 'RedCloth'
@@ -11,10 +13,10 @@ end
 Tilt.register NBRedClothTemplate, 'textile'
 Tilt.prefer NBRedClothTemplate
 
-Slim::Engine.set_default_options :pretty => true
+Slim::Engine.set_default_options pretty: true
 
-set :textile, :layout_engine => :slim
+set :textile, layout_engine: :slim
 
 configure :build do
-  set :http_prefix, "/parslet/"
+  set :http_prefix, '/parslet/'
 end

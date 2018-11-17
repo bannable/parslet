@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'bundler/setup'
 
-$:.unshift File.expand_path(File.dirname(__FILE__) + "/lib")
+$LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__) + '/lib')
 require 'prelude'
 require 'example_runner'
 

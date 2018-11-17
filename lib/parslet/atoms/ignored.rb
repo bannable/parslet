@@ -1,26 +1,33 @@
-# Ignores the result of a match.
-#
-# Example:
-#
-#   str('foo')            # will return 'foo',
-#   str('foo').ignore     # will return nil
-#
-class Parslet::Atoms::Ignored < Parslet::Atoms::Base
-  attr_reader :parslet
-  def initialize(parslet)
-    super()
+# frozen_string_literal: true
 
-    @parslet = parslet
-  end
+module Parslet
+  module Atoms
+    # Ignores the result of a match.
+    #
+    # Example:
+    #
+    #   str('foo')            # will return 'foo',
+    #   str('foo').ignore     # will return nil
+    #
+    class Ignored < Parslet::Atoms::Base
+      attr_reader :parslet
+      def initialize(parslet)
+        super()
 
-  def apply(source, context, consume_all)
-    success, _ = result = parslet.apply(source, context, consume_all)
+        @parslet = parslet
+      end
 
-    return result unless success
-    succ(nil)
-  end
-  
-  def to_s_inner(prec)
-    "ignored(#{parslet.to_s(prec)})"
+      def apply(source, context, consume_all)
+        success, = result = parslet.apply(source, context, consume_all)
+
+        return result unless success
+
+        succ(nil)
+      end
+
+      def to_s_inner(prec)
+        "ignored(#{parslet.to_s(prec)})"
+      end
+    end
   end
 end

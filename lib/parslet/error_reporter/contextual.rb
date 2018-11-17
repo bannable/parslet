@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module Parslet
   module ErrorReporter
-
     # A reporter that tries to improve on the deepest error reporter by
     # using heuristics to find the most relevant error and provide more
     # context.
@@ -55,7 +56,6 @@ module Parslet
     #     failed to parse
     #
     class Contextual < Deepest
-
       def initialize
         @last_reset_pos = 0
         reset
@@ -70,6 +70,7 @@ module Parslet
       def succ(source)
         source_pos = source.pos.bytepos
         return if source_pos < @last_reset_pos
+
         @last_reset_pos = source_pos
         reset
       end
@@ -92,7 +93,7 @@ module Parslet
       # @param children [Array] A list of errors from a deeper level (or nil).
       # @return [Cause] An error tree combining children with message.
       #
-      def err(atom, source, message, children=nil)
+      def err(atom, source, message, children = nil)
         cause = super(atom, source, message, children)
         if (label = atom.respond_to?(:label) && atom.label)
           update_label(label, source.pos.bytepos)
@@ -109,12 +110,11 @@ module Parslet
       # @param bytepos [Integer] position in source code of matched source
       #
       def update_label(label, bytepos)
-        if bytepos >= @label_pos
-          @label_pos = bytepos
-          @label = label
-        end
-      end
+        return unless bytepos >= @label_pos
 
+        @label_pos = bytepos
+        @label = label
+      end
     end
   end
 end

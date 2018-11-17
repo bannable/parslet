@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Parslet::Context do
   def context(*args)
     described_class.new(*args)
   end
-  
-  it "binds hash keys as variable like things" do
-    context(:a => 'value').instance_eval { a }.
-      should == 'value'
+
+  it 'binds hash keys as variable like things' do
+    context(a: 'value').instance_eval { a }
+                       .should == 'value'
   end
   it "one contexts variables aren't the next ones" do
-    ca = context(:a => 'b')
-    cb = context(:b => 'c')
+    ca = context(a: 'b')
+    cb = context(b: 'c')
 
     ca.methods.should_not include(:b)
     cb.methods.should_not include(:a)

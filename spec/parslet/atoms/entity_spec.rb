@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Parslet::Atoms::Entity do
@@ -6,30 +8,30 @@ describe Parslet::Atoms::Entity do
 
     it "should parse 'bar' without raising exceptions" do
       named.parse('bar')
-    end 
+    end
     it "should raise when applied to 'foo'" do
       lambda {
         named.parse('foo')
       }.should raise_error(Parslet::ParseFailed)
-    end 
+    end
 
-    describe "#inspect" do
-      it "should return the name of the entity" do
+    describe '#inspect' do
+      it 'should return the name of the entity' do
         named.inspect.should == 'NAME'
-      end 
+      end
     end
   end
-  context "when constructed with empty block" do
-    let(:entity) { Parslet::Atoms::Entity.new('name', &proc { }) }
-    
-    it "should raise NotImplementedError" do
+  context 'when constructed with empty block' do
+    let(:entity) { Parslet::Atoms::Entity.new('name', &proc {}) }
+
+    it 'should raise NotImplementedError' do
       lambda {
         entity.parse('some_string')
       }.should raise_error(NotImplementedError)
-    end 
+    end
   end
-  
-  context "recursive definition parser" do
+
+  context 'recursive definition parser' do
     class RecDefParser
       include Parslet
       rule :recdef do
@@ -40,9 +42,9 @@ describe Parslet::Atoms::Entity do
       end
     end
     let(:parser) { RecDefParser.new }
-    
-    it "should parse balanced parens" do
-      parser.recdef.parse("(((a)))")
+
+    it 'should parse balanced parens' do
+      parser.recdef.parse('(((a)))')
     end
     it "should not throw 'stack level too deep' when printing errors" do
       cause = catch_failed_parse { parser.recdef.parse('(((a))') }
@@ -50,26 +52,26 @@ describe Parslet::Atoms::Entity do
     end
   end
 
-  context "when constructed with a label" do
+  context 'when constructed with a label' do
     let(:named) { Parslet::Atoms::Entity.new('name', 'label', &proc { Parslet.str('bar') }) }
 
     it "should parse 'bar' without raising exceptions" do
       named.parse('bar')
-    end 
+    end
     it "should raise when applied to 'foo'" do
       lambda {
         named.parse('foo')
       }.should raise_error(Parslet::ParseFailed)
-    end 
-
-    describe "#inspect" do
-      it "should return the label of the entity" do
-        named.inspect.should == 'label'
-      end 
     end
 
-    describe "#parslet" do
-      it "should set the label on the cached parslet" do
+    describe '#inspect' do
+      it 'should return the label of the entity' do
+        named.inspect.should == 'label'
+      end
+    end
+
+    describe '#parslet' do
+      it 'should set the label on the cached parslet' do
         named.parslet.label.should == 'label'
       end
     end

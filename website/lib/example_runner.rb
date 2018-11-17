@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 require 'case'
 require 'text/highlight'
@@ -14,6 +15,4 @@ class ExampleRunner
   end
 end
 
-if $0 == __FILE__
-  ExampleRunner.new.run(ARGV)
-end
+ExampleRunner.new.run(ARGV) if $PROGRAM_NAME == __FILE__

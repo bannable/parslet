@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 # A namespace for all error reporters.
 #
-module Parslet::ErrorReporter
+module Parslet
+  module ErrorReporter; end
 end
 
 require 'parslet/error_reporter/tree'

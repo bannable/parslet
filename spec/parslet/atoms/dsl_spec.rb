@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Parslet::Atoms::DSL do
-  describe "deprecated methods" do
+  describe 'deprecated methods' do
     let(:parslet) { Parslet.str('foo') }
-    describe "<- #absnt?" do
+    describe '<- #absnt?' do
       slet(:absnt) { parslet.absnt? }
       it '#bound_parslet' do
         absnt.bound_parslet.should == parslet
@@ -12,7 +14,7 @@ describe Parslet::Atoms::DSL do
         absnt.positive.should == false
       end
     end
-    describe "<- #prsnt?" do
+    describe '<- #prsnt?' do
       slet(:prsnt) { parslet.prsnt? }
       it '#bound_parslet' do
         prsnt.bound_parslet.should == parslet
