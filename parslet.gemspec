@@ -2,13 +2,13 @@
 
 Gem::Specification.new do |s|
   s.name = 'parslet'
-  s.version = '1.8.2'
+  s.version = '2.0'
 
-  s.authors = ['Kaspar Schiess']
-  s.email = 'kaspar.schiess@absurd.li'
+  s.authors = ['Kaspar Schiess', 'Joe Truba']
+  s.email = 'joe@bannable.net'
   s.extra_rdoc_files = ['README']
   s.files = %w[HISTORY.txt LICENSE Rakefile README parslet.gemspec] + Dir.glob('{lib,spec,example}/**/*')
-  s.homepage = 'http://kschiess.github.io/parslet'
+  s.homepage = 'http://bannable.github.io/parslet'
   s.license = 'MIT'
   s.rdoc_options = ['--main', 'README']
   s.require_paths = ['lib']
