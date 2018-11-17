@@ -21,11 +21,12 @@ describe Parslet::Transform do
       end
 
       it "should transform 'a' into A.new('a')" do
-        transform.apply('a').should == A.new('a')
+        expect(transform.apply('a')).to eq(A.new('a'))
       end
       it "should transform ['a', 'b'] into [A.new('a'), A.new('b')]" do
-        transform.apply(%w[a b]).should ==
+        expect(transform.apply(%w[a b])).to eq(
           [A.new('a'), A.new('b')]
+        )
       end
     end
     context 'given rules on {:a => simple(:x)} and {:b => :_x}' do
@@ -35,10 +36,10 @@ describe Parslet::Transform do
       end
 
       it "should transform {:d=>{:b=>'c'}} into d => B('c')" do
-        transform.apply(d: { b: 'c' }).should == { d: B.new('c') }
+        expect(transform.apply(d: { b: 'c' })).to eq({ d: B.new('c') })
       end
       it "should transform {:a=>{:b=>'c'}} into A(B('c'))" do
-        transform.apply(a: { b: 'c' }).should == A.new(B.new('c'))
+        expect(transform.apply(a: { b: 'c' })).to eq(A.new(B.new('c')))
       end
     end
     describe 'pulling out subbranches' do
@@ -49,8 +50,9 @@ describe Parslet::Transform do
       end
 
       it "should yield Bi.new('c', 'f')" do
-        transform.apply(a: { b: 'c' }, d: { e: 'f' }).should ==
+        expect(transform.apply(a: { b: 'c' }, d: { e: 'f' })).to eq(
           Bi.new('c', 'f')
+        )
       end
     end
   end
@@ -62,7 +64,7 @@ describe Parslet::Transform do
     end
 
     it 'should still evaluate rules correctly' do
-      transform.apply('a').should == A.new('a')
+      expect(transform.apply('a')).to eq(A.new('a'))
     end
   end
   describe 'class construction' do
@@ -73,7 +75,7 @@ describe Parslet::Transform do
     let(:transform) { OptimusPrime.new }
 
     it 'should evaluate rules' do
-      transform.apply(a: 'a').should == A.new('a')
+      expect(transform.apply(a: 'a')).to eq(A.new('a'))
     end
 
     context 'optionally raise when no match found' do
@@ -86,13 +88,13 @@ describe Parslet::Transform do
       let(:transform) { BumbleBee.new }
 
       it 'should evaluate rules' do
-        transform.apply(a: 'a').should == A.new('a')
+        expect(transform.apply(a: 'a')).to eq(A.new('a'))
       end
 
       it 'should raise when no rules are matched' do
-        lambda {
+        expect {
           transform.apply(z: 'z')
-        }.should raise_error(NotImplementedError, /Failed to match/)
+        }.to raise_error(NotImplementedError, /Failed to match/)
       end
     end
 
@@ -104,15 +106,15 @@ describe Parslet::Transform do
       let(:transform) { OptimusPrimeJunior.new }
 
       it 'should inherit rules from its parent' do
-        transform.apply(a: 'a').should == A.new('a')
+        expect(transform.apply(a: 'a')).to eq(A.new('a'))
       end
 
       it 'should be able to override rules from its parent' do
-        transform.apply(b: 'b').should == B.new('B')
+        expect(transform.apply(b: 'b')).to eq(B.new('B'))
       end
 
       it 'should be able to define new rules' do
-        transform.apply(c: 'c').should == C.new('c')
+        expect(transform.apply(c: 'c')).to eq(C.new('c'))
       end
     end
   end
@@ -125,17 +127,17 @@ describe Parslet::Transform do
           called = true
         end)
 
-        called.should == true
+        expect(called).to eq(true)
       end
       it 'should yield the bindings' do
         transform.call_on_match(bindings, lambda do |dict|
-          dict.should == bindings
+          expect(dict).to eq(bindings)
         end)
       end
       it 'should execute in the current context' do
         foo = 'test'
         transform.call_on_match(bindings, lambda do |_dict|
-          foo.should == 'test'
+          expect(foo).to eq('test')
         end)
       end
     end
@@ -146,18 +148,16 @@ describe Parslet::Transform do
           called = true
         end)
 
-        called.should == true
+        expect(called).to eq(true)
       end
       it 'should have bindings as local variables' do
-        transform.call_on_match(bindings, proc do
-          foo.should == 'test'
-        end)
+        expect(transform.call_on_match(bindings, proc { foo })).to eq('test')
       end
       it 'should execute in its own context' do
         @bar = 'test'
         transform.call_on_match(bindings, proc do
           if instance_variable_defined?('@bar')
-            instance_variable_get('@bar').should_not == 'test'
+            expect(instance_variable_get('@bar')).not_to eq('test')
           end
         end)
       end
@@ -176,11 +176,11 @@ describe Parslet::Transform do
   context 'when not using the bindings as hash, but as local variables' do
     it 'should access the variables' do
       transform.rule(simple(:x)) { A.new(x) }
-      transform.apply('a').should == A.new('a')
+      expect(transform.apply('a')).to eq(A.new('a'))
     end
     it 'should allow context as local variable' do
       transform.rule(simple(:x)) { foo }
-      transform.apply('a', foo: 'bar').should == 'bar'
+      expect(transform.apply('a', foo: 'bar')).to eq('bar')
     end
   end
 end

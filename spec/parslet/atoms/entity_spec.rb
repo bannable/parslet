@@ -10,14 +10,14 @@ describe Parslet::Atoms::Entity do
       named.parse('bar')
     end
     it "should raise when applied to 'foo'" do
-      lambda {
+      expect {
         named.parse('foo')
-      }.should raise_error(Parslet::ParseFailed)
+      }.to raise_error(Parslet::ParseFailed)
     end
 
     describe '#inspect' do
       it 'should return the name of the entity' do
-        named.inspect.should == 'NAME'
+        expect(named.inspect).to eq('NAME')
       end
     end
   end
@@ -25,9 +25,9 @@ describe Parslet::Atoms::Entity do
     let(:entity) { Parslet::Atoms::Entity.new('name', &proc {}) }
 
     it 'should raise NotImplementedError' do
-      lambda {
+      expect {
         entity.parse('some_string')
-      }.should raise_error(NotImplementedError)
+      }.to raise_error(NotImplementedError)
     end
   end
 
@@ -59,20 +59,20 @@ describe Parslet::Atoms::Entity do
       named.parse('bar')
     end
     it "should raise when applied to 'foo'" do
-      lambda {
+      expect {
         named.parse('foo')
-      }.should raise_error(Parslet::ParseFailed)
+      }.to raise_error(Parslet::ParseFailed)
     end
 
     describe '#inspect' do
       it 'should return the label of the entity' do
-        named.inspect.should == 'label'
+        expect(named.inspect).to eq('label')
       end
     end
 
     describe '#parslet' do
       it 'should set the label on the cached parslet' do
-        named.parslet.label.should == 'label'
+        expect(named.parslet.label).to eq('label')
       end
     end
   end

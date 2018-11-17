@@ -56,7 +56,7 @@ describe Parslet::Parser, 'exporting to other lingos' do
     end
     it 'should be valid citrus syntax' do
       # puts MiniLisp.new.to_citrus
-      MiniLisp.new.to_citrus.should == citrus
+      expect(MiniLisp.new.to_citrus).to eq(citrus)
     end
   end
   describe '<- #to_treetop' do
@@ -67,7 +67,7 @@ describe Parslet::Parser, 'exporting to other lingos' do
     end
     it 'should be valid treetop syntax' do
       # puts MiniLisp.new.to_treetop
-      MiniLisp.new.to_treetop.should == treetop
+      expect(MiniLisp.new.to_treetop).to eq(treetop)
     end
   end
 end

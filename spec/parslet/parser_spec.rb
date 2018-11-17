@@ -17,17 +17,17 @@ describe Parslet::Parser do
       parser_instance = parser.new
       flexmock(parser_instance).should_receive(root_parslet: :answer)
 
-      parser_instance.root.should == :answer
+      expect(parser_instance.root).to eq(:answer)
     end
   end
   it "should parse 'foo'" do
-    FooParser.new.parse('foo').should == 'foo'
+    expect(FooParser.new.parse('foo')).to eq('foo')
   end
   context 'composition' do
     let(:parser) { FooParser.new }
     it 'should allow concatenation' do
       composite = parser >> str('bar')
-      composite.should parse('foobar')
+      expect(composite).to parse('foobar')
     end
   end
 end

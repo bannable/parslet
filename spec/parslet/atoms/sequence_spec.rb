@@ -20,8 +20,8 @@ describe Parslet::Atoms::Sequence do
       let!(:chained) { sequence >> str('c') }
 
       it 'is side-effect free' do
-        chained.should parse('abc')
-        chained.should_not parse('abdc')
+        expect(chained).to parse('abc')
+        expect(chained).not_to parse('abdc')
       end
     end
   end

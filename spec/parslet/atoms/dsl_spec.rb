@@ -8,19 +8,19 @@ describe Parslet::Atoms::DSL do
     describe '<- #absnt?' do
       slet(:absnt) { parslet.absnt? }
       it '#bound_parslet' do
-        absnt.bound_parslet.should == parslet
+        expect(absnt.bound_parslet).to eq(parslet)
       end
       it 'should be a negative lookahead' do
-        absnt.positive.should == false
+        expect(absnt.positive).to eq(false)
       end
     end
     describe '<- #prsnt?' do
       slet(:prsnt) { parslet.prsnt? }
       it '#bound_parslet' do
-        prsnt.bound_parslet.should == parslet
+        expect(prsnt.bound_parslet).to eq(parslet)
       end
       it 'should be a positive lookahead' do
-        prsnt.positive.should == true
+        expect(prsnt.positive).to eq(true)
       end
     end
   end

@@ -16,7 +16,7 @@ describe Parslet::Scope do
       end.to raise_error(Parslet::Scope::NotFound)
     end
     it 'allows retrieval of stored values' do
-      scope[:foo].should == :bar
+      expect(scope[:foo]).to eq(:bar)
     end
   end
 
@@ -27,19 +27,19 @@ describe Parslet::Scope do
     let(:depth) { scope[:depth] }
     subject { depth }
 
-    it { should == 1 }
+    it { is_expected.to eq(1) }
     describe 'after a push' do
       before(:each) { scope.push }
-      it { should == 1 }
+      it { is_expected.to eq(1) }
 
       describe 'and reassign' do
         before(:each) { scope[:depth] = 2 }
 
-        it { should == 2 }
+        it { is_expected.to eq(2) }
 
         describe 'and a pop' do
           before(:each) { scope.pop }
-          it { should == 1 }
+          it { is_expected.to eq(1) }
         end
       end
     end

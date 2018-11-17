@@ -46,12 +46,12 @@ describe 'Regressions from real examples' do
   describe ArgumentListParser do
     let(:instance) { ArgumentListParser.new }
     it 'should have method expression' do
-      instance.should respond_to(:expression)
+      expect(instance).to respond_to(:expression)
     end
     it 'should parse "arg1", "arg2"' do
       result = ArgumentListParser.new.parse('"arg1", "arg2"')
 
-      result.size.should == 2
+      expect(result.size).to eq(2)
       result.each do |r|
         r[:argument]
       end
@@ -59,7 +59,7 @@ describe 'Regressions from real examples' do
     it 'should parse "arg1", "arg2", "arg3"' do
       result = ArgumentListParser.new.parse('"arg1", "arg2", "arg3"')
 
-      result.size.should == 3
+      expect(result.size).to eq(3)
       result.each do |r|
         r[:argument]
       end
@@ -84,25 +84,25 @@ describe 'Regressions from real examples' do
         # remind me of what is left to be done. And to remind you not to
         # trust this code.
         instance.parse('(())')
-        lambda {
+        expect {
           instance.parse('((()))')
           instance.parse('(((())))')
-        }.should_not raise_error
+        }.not_to raise_error
       end
     end
     context "expression '(())'" do
       let(:result) { instance.parse('(())') }
 
       it 'should yield a doubly nested hash' do
-        result.should be_a(Hash)
-        result.should have_key(:m)
-        result[:m].should be_a(Hash) # This was an array earlier
+        expect(result).to be_a(Hash)
+        expect(result).to have_key(:m)
+        expect(result[:m]).to be_a(Hash) # This was an array earlier
       end
       context 'inner hash' do
         let(:inner) { result[:m] }
 
         it 'should have nil as :m' do
-          inner[:m].should be_nil
+          expect(inner[:m]).to be_nil
         end
       end
     end
@@ -140,14 +140,14 @@ describe 'Regressions from real examples' do
         ')
       end
 
-      remove_indent(cause.ascii_tree).should == remove_indent(%q(
+      expect(remove_indent(cause.ascii_tree)).to eq(remove_indent(%q(
       Expected one of [(LINE EOL){1, }, LINE] at line 1 char 1.
       |- Extra input after last repetition at line 7 char 11.
       |  `- Failed to match sequence (LINE EOL) at line 7 char 11.
       |     `- Failed to match sequence (SPACE? [\n\r]{1, } SPACE?) at line 7 char 11.
       |        `- Expected at least 1 of [\n\r] at line 7 char 11.
       |           `- Failed to match [\n\r] at line 7 char 11.
-      `- Don't know what to do with "\n         " at line 1 char 2.).strip)
+      `- Don't know what to do with "\n         " at line 1 char 2.).strip))
     end
   end
 
@@ -158,13 +158,13 @@ describe 'Regressions from real examples' do
   end
   describe BLanguage do
     it "should parse 'bb'" do
-      subject.should parse('bb').as(one: 'b', two: 'b')
+      expect(subject).to parse('bb').as(one: 'b', two: 'b')
     end
     it 'should transform with binding constraint' do
       transform = Parslet::Transform.new do |t|
         t.rule(one: simple(:b), two: simple(:b)) { :ok }
       end
-      transform.apply(subject.parse('bb')).should == :ok
+      expect(transform.apply(subject.parse('bb'))).to eq(:ok)
     end
   end
 
@@ -174,8 +174,8 @@ describe 'Regressions from real examples' do
   end
   describe UnicodeLanguage do
     it 'should parse UTF-8 strings' do
-      subject.should parse('éèäöü').as('éèäöü')
-      subject.should parse('RubyKaigi2009のテーマは、「変わる／変える」です。 前回の').as('RubyKaigi2009のテーマは、「変わる／変える」です。 前回の')
+      expect(subject).to parse('éèäöü').as('éèäöü')
+      expect(subject).to parse('RubyKaigi2009のテーマは、「変わる／変える」です。 前回の').as('RubyKaigi2009のテーマは、「変わる／変える」です。 前回の')
     end
   end
 
@@ -199,7 +199,7 @@ describe 'Regressions from real examples' do
     end
 
     it 'should parse sentences' do
-      subject.should parse(string)
+      expect(subject).to parse(string)
     end
   end
 
@@ -216,10 +216,10 @@ describe 'Regressions from real examples' do
       error = catch_failed_parse do
         subject.parse('123')
       end
-      di(error.ascii_tree).should == di(%q(
+      expect(di(error.ascii_tree)).to eq(di(%q(
         Failed to match sequence (. '2') at line 1 char 2.
         `- Don't know what to do with "3" at line 1 char 3.
-      ))
+      )))
     end
   end
 
@@ -275,11 +275,11 @@ describe 'Regressions from real examples' do
         ')
       end
 
-      di(error.ascii_tree).should == di("
+      expect(di(error.ascii_tree)).to eq(di("
         Failed to match sequence (NL? BLOCK (NL BLOCK){0, } NL?) at line 2 char 11.
         `- Failed to match sequence (SP? 'begin' SP [a-z] NL BODY SP? 'end') at line 5 char 9.
            `- Premature end of input at line 5 char 9.
-        ")
+        "))
     end
     it 'fails gracefully on a missing end (2)' do
       error = catch_failed_parse do
@@ -292,10 +292,10 @@ describe 'Regressions from real examples' do
         ')
       end
 
-      di(error.ascii_tree).should == di(%q(
+      expect(di(error.ascii_tree)).to eq(di(%q(
         Failed to match sequence (NL? BLOCK (NL BLOCK){0, } NL?) at line 3 char 14.
         `- Don't know what to do with "begin b\n  " at line 4 char 11.
-        ))
+        )))
     end
     it 'fails gracefully on a missing end (deepest reporter)' do
       error = catch_failed_parse do
@@ -311,10 +311,10 @@ describe 'Regressions from real examples' do
                       reporter: Parslet::ErrorReporter::Deepest.new)
       end
 
-      di(error.ascii_tree).should == di(%q(
+      expect(di(error.ascii_tree)).to eq(di(%q(
         Failed to match sequence (NL? BLOCK (NL BLOCK){0, } NL?) at line 3 char 16.
         `- Expected "end", but got "li\n" at line 6 char 17.
-        ))
+        )))
     end
   end
 end

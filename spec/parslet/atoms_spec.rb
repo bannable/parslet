@@ -33,10 +33,10 @@ describe Parslet do
       cause = catch_failed_parse do
         parslet.parse('d')
       end
-      cause.to_s.should == 'Failed to match [abc] at line 1 char 1.'
+      expect(cause.to_s).to eq('Failed to match [abc] at line 1 char 1.')
     end
     it 'should print as [abc]' do
-      parslet.inspect.should == '[abc]'
+      expect(parslet.inspect).to eq('[abc]')
     end
   end
   describe "match(['[a]').repeat(3)" do
@@ -50,10 +50,10 @@ describe Parslet do
         catch_failed_parse { parslet.parse('aa') }
       end
       it 'should have a relevant cause' do
-        cause.to_s.should == 'Expected at least 3 of [a] at line 1 char 1.'
+        expect(cause.to_s).to eq('Expected at least 3 of [a] at line 1 char 1.')
       end
       it 'should have a tree with 2 nodes' do
-        cause.children.size.should == 1
+        expect(cause.children.size).to eq(1)
       end
     end
     it "should succeed on 'aaa'" do
@@ -63,7 +63,7 @@ describe Parslet do
       parslet.parse('a' * 100)
     end
     it 'should inspect as [a]{3, }' do
-      parslet.inspect.should == '[a]{3, }'
+      expect(parslet.inspect).to eq('[a]{3, }')
     end
   end
   describe "str('foo')" do
@@ -77,11 +77,12 @@ describe Parslet do
     end
     it "should not parse 'bar'"  do
       cause = catch_failed_parse { parslet.parse('bar') }
-      cause.to_s.should ==
+      expect(cause.to_s).to eq(
         'Expected "foo", but got "bar" at line 1 char 1.'
+      )
     end
     it "should inspect as 'foo'" do
-      parslet.inspect.should == "'foo'"
+      expect(parslet.inspect).to eq("'foo'")
     end
   end
   describe "str('foo').maybe" do
@@ -93,20 +94,20 @@ describe Parslet do
     it 'should leave pos untouched if there is no foo' do
       source = src('bar')
       parslet.apply(source, context)
-      source.pos.charpos.should == 0
+      expect(source.pos.charpos).to eq(0)
     end
     it "should inspect as 'foo'?" do
-      parslet.inspect.should == "'foo'?"
+      expect(parslet.inspect).to eq("'foo'?")
     end
     context "when parsing 'foo'" do
       subject { parslet.parse('foo') }
 
-      it { should == 'foo' }
+      it { is_expected.to eq('foo') }
     end
     context "when parsing ''" do
       subject { parslet.parse('') }
 
-      it { should == '' }
+      it { is_expected.to eq('') }
     end
   end
   describe "str('foo') >> str('bar')" do
@@ -118,17 +119,17 @@ describe Parslet do
       end
 
       it "should not parse 'foobaz'" do
-        cause.to_s.should == "Failed to match sequence ('foo' 'bar') at line 1 char 4."
+        expect(cause.to_s).to eq("Failed to match sequence ('foo' 'bar') at line 1 char 4.")
       end
       it 'should have 2 nodes in error tree' do
-        cause.children.size.should == 1
+        expect(cause.children.size).to eq(1)
       end
     end
     it "should parse 'foobar'" do
       parslet.parse('foobar')
     end
     it "should inspect as ('foo' 'bar')" do
-      parslet.inspect.should == "'foo' 'bar'"
+      expect(parslet.inspect).to eq("'foo' 'bar'")
     end
   end
   describe "str('foo') | str('bar')" do
@@ -143,10 +144,10 @@ describe Parslet do
       end
 
       it 'should have a sensible cause' do
-        cause.to_s.should == "Expected one of ['foo', 'bar'] at line 1 char 1."
+        expect(cause.to_s).to eq("Expected one of ['foo', 'bar'] at line 1 char 1.")
       end
       it 'should have an error tree with 3 nodes' do
-        cause.children.size.should == 2
+        expect(cause.children.size).to eq(2)
       end
     end
 
@@ -157,7 +158,7 @@ describe Parslet do
       parslet.parse('bar')
     end
     it "should inspect as ('foo' / 'bar')" do
-      parslet.inspect.should == "'foo' / 'bar'"
+      expect(parslet.inspect).to eq("'foo' / 'bar'")
     end
   end
   describe "str('foo').present? (positive lookahead)" do
@@ -167,27 +168,27 @@ describe Parslet do
     end
 
     it "should inspect as &'foo'" do
-      parslet.inspect.should == "&'foo'"
+      expect(parslet.inspect).to eq("&'foo'")
     end
     context "when fed 'foo'" do
       it 'should parse' do
         success, = parslet.apply(src('foo'), context)
-        success.should == true
+        expect(success).to eq(true)
       end
       it 'should not change input position' do
         source = src('foo')
         parslet.apply(source, context)
-        source.pos.charpos.should == 0
+        expect(source.pos.charpos).to eq(0)
       end
     end
     context "when fed 'bar'" do
       it 'should not parse' do
-        -> { parslet.parse('bar') }.should not_parse
+        expect { parslet.parse('bar') }.to not_parse
       end
     end
     describe '<- #parse' do
       it 'should return nil' do
-        parslet.apply(src('foo'), context).should == [true, nil]
+        expect(parslet.apply(src('foo'), context)).to eq([true, nil])
       end
     end
   end
@@ -198,21 +199,21 @@ describe Parslet do
     end
 
     it "should inspect as !'foo'" do
-      parslet.inspect.should == "!'foo'"
+      expect(parslet.inspect).to eq("!'foo'")
     end
     context "when fed 'bar'" do
       it 'should parse' do
-        parslet.apply(src('bar'), context).should == [true, nil]
+        expect(parslet.apply(src('bar'), context)).to eq([true, nil])
       end
       it 'should not change input position' do
         source = src('bar')
         parslet.apply(source, context)
-        source.pos.charpos.should == 0
+        expect(source.pos.charpos).to eq(0)
       end
     end
     context "when fed 'foo'" do
       it 'should not parse' do
-        -> { parslet.parse('foo') }.should not_parse
+        expect { parslet.parse('foo') }.to not_parse
       end
     end
   end
@@ -228,9 +229,9 @@ describe Parslet do
     end
 
     it 'should not loop infinitely' do
-      lambda {
+      expect {
         Timeout.timeout(1) { parslet.parse('bar') }
-      }.should raise_error(Parslet::ParseFailed)
+      }.to raise_error(Parslet::ParseFailed)
     end
   end
   describe 'any' do
@@ -245,7 +246,7 @@ describe Parslet do
     it 'should consume one char' do
       source = src('foo')
       parslet.apply(source, context)
-      source.pos.charpos.should == 1
+      expect(source.pos.charpos).to eq(1)
     end
   end
   describe 'eof behaviour' do
@@ -254,7 +255,7 @@ describe Parslet do
 
       it 'should fail the parse' do
         cause = catch_failed_parse { parslet.parse('..') }
-        cause.to_s.should == "Don't know what to do with \".\" at line 1 char 2."
+        expect(cause.to_s).to eq("Don't know what to do with \".\" at line 1 char 2.")
       end
     end
     context "when the pattern doesn't match the input" do
@@ -267,11 +268,12 @@ describe Parslet do
 
       it 'raises Parslet::ParseFailed' do
         # ParseFailed here, because the input doesn't match the parser grammar.
-        exception.should be_kind_of(Parslet::ParseFailed)
+        expect(exception).to be_kind_of(Parslet::ParseFailed)
       end
       it 'has the correct error message' do
-        exception.message.should == \
+        expect(exception.message).to eq( \
           'Extra input after last repetition at line 1 char 2.'
+        )
       end
     end
   end
@@ -279,46 +281,47 @@ describe Parslet do
   describe '<- #as(name)' do
     context "str('foo').as(:bar)" do
       it "should return :bar => 'foo'" do
-        str('foo').as(:bar).parse('foo').should == { bar: 'foo' }
+        expect(str('foo').as(:bar).parse('foo')).to eq({ bar: 'foo' })
       end
     end
     context "match('[abc]').as(:name)" do
       it "should return :name => 'b'" do
-        match('[abc]').as(:name).parse('b').should == { name: 'b' }
+        expect(match('[abc]').as(:name).parse('b')).to eq({ name: 'b' })
       end
     end
     context "match('[abc]').repeat.as(:name)" do
       it "should return collated result ('abc')" do
-        match('[abc]').repeat.as(:name)
-                      .parse('abc').should == { name: 'abc' }
+        expect(match('[abc]').repeat.as(:name)
+                      .parse('abc')).to eq({ name: 'abc' })
       end
     end
     context "(str('a').as(:a) >> str('b').as(:b)).as(:c)" do
       it 'should return a hash of hashes' do
-        (str('a').as(:a) >> str('b').as(:b)).as(:c)
-                                            .parse('ab').should == {
+        expect((str('a').as(:a) >> str('b').as(:b)).as(:c)
+                                            .parse('ab')).to eq({
                                               c: {
                                                 a: 'a',
                                                 b: 'b'
                                               }
-                                            }
+                                            })
       end
     end
     context "(str('a').as(:a) >> str('ignore') >> str('b').as(:b))" do
       it "should correctly flatten (leaving out 'ignore')" do
-        (str('a').as(:a) >> str('ignore') >> str('b').as(:b))
-          .parse('aignoreb').should ==
+        expect((str('a').as(:a) >> str('ignore') >> str('b').as(:b))
+          .parse('aignoreb')).to eq(
           {
             a: 'a',
             b: 'b'
           }
+        )
       end
     end
 
     context "(str('a') >> str('ignore') >> str('b')) (no .as(...))" do
       it 'should return simply the original string' do
-        (str('a') >> str('ignore') >> str('b'))
-          .parse('aignoreb').should == 'aignoreb'
+        expect((str('a') >> str('ignore') >> str('b'))
+          .parse('aignoreb')).to eq('aignoreb')
       end
     end
     context "str('a').as(:a) >> str('b').as(:a)" do
@@ -330,25 +333,25 @@ describe Parslet do
       it 'should issue a warning that a key is being overwritten in merge' do
         flexmock(parslet)
           .should_receive(:warn).once
-        parslet.parse('ab').should == { a: 'b' }
+        expect(parslet.parse('ab')).to eq({ a: 'b' })
       end
       it "should return :a => 'b'" do
         flexmock(parslet)
           .should_receive(:warn)
 
-        parslet.parse('ab').should == { a: 'b' }
+        expect(parslet.parse('ab')).to eq({ a: 'b' })
       end
     end
     context "str('a').absent?" do
       it 'should return something in merge, even though it is nil' do
-        (str('a').absent? >> str('b').as(:b))
-          .parse('b').should == { b: 'b' }
+        expect((str('a').absent? >> str('b').as(:b))
+          .parse('b')).to eq({ b: 'b' })
       end
     end
     context "str('a').as(:a).repeat" do
       it 'should return an array of subtrees' do
-        str('a').as(:a).repeat
-                .parse('aa').should == [{ a: 'a' }, { a: 'a' }]
+        expect(str('a').as(:a).repeat
+                .parse('aa')).to eq([{ a: 'a' }, { a: 'a' }])
       end
     end
   end
@@ -394,7 +397,7 @@ describe Parslet do
       [[:sequence, nil, ' '], ' ']
     ].each do |input, output|
       it "should transform #{input.inspect} to #{output.inspect}" do
-        call(input).should == output
+        expect(call(input)).to eq(output)
       end
     end
   end
@@ -423,7 +426,7 @@ describe Parslet do
     ].each do |(parslet, inspect_output)|
       context "regression for #{parslet.inspect}" do
         it "should inspect correctly as #{inspect_output}" do
-          parslet.inspect.should == inspect_output
+          expect(parslet.inspect).to eq(inspect_output)
         end
       end
     end

@@ -8,7 +8,7 @@ describe 'Tree output' do
   def self.hash_examples(h)
     h.each do |atom, expected|
       it "should convert #{atom} to #{expected.inspect}" do
-        atom.parse(input).should == expected
+        expect(atom.parse(input)).to eq(expected)
       end
     end
   end

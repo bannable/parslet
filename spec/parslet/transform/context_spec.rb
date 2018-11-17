@@ -8,15 +8,15 @@ describe Parslet::Context do
   end
 
   it 'binds hash keys as variable like things' do
-    context(a: 'value').instance_eval { a }
-                       .should == 'value'
+    expect(context(a: 'value').instance_eval { a })
+                       .to eq('value')
   end
   it "one contexts variables aren't the next ones" do
     ca = context(a: 'b')
     cb = context(b: 'c')
 
-    ca.methods.should_not include(:b)
-    cb.methods.should_not include(:a)
+    expect(ca.methods).not_to include(:b)
+    expect(cb.methods).not_to include(:a)
   end
 
   describe 'works as a Ruby object should' do

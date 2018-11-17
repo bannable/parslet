@@ -8,9 +8,9 @@ describe Parslet::Atoms::Base do
 
   describe '<- #try(io)' do
     it 'should raise NotImplementedError' do
-      lambda {
+      expect {
         parslet.try(flexmock(:io), context, false)
-      }.should raise_error(NotImplementedError)
+      }.to raise_error(NotImplementedError)
     end
   end
   describe '<- #flatten_sequence' do
@@ -38,7 +38,7 @@ describe Parslet::Atoms::Base do
     ].each_slice(2) do |sequence, result|
       context 'for ' + sequence.inspect do
         it "should equal #{result.inspect}" do
-          parslet.flatten_sequence(sequence).should == result
+          expect(parslet.flatten_sequence(sequence)).to eq(result)
         end
       end
     end
@@ -49,7 +49,7 @@ describe Parslet::Atoms::Base do
     end
 
     it 'should give subtrees precedence' do
-      unnamed([[{ a: 'a' }, { m: 'm' }], { a: 'a' }]).should == [{ a: 'a' }]
+      expect(unnamed([[{ a: 'a' }, { m: 'm' }], { a: 'a' }])).to eq([{ a: 'a' }])
     end
   end
   describe '#parse(source)' do
@@ -77,7 +77,7 @@ describe Parslet::Atoms::Base do
     it 'should contain a string' do
       Parslet.str('foo').parse('bar')
     rescue Parslet::ParseFailed => ex
-      ex.message.should be_kind_of(String)
+      expect(ex.message).to be_kind_of(String)
     end
   end
   context 'when not all input is consumed' do
@@ -88,14 +88,14 @@ describe Parslet::Atoms::Base do
         parslet.parse('foobar')
       end
 
-      error.to_s.should == "Don't know what to do with \"bar\" at line 1 char 4."
+      expect(error.to_s).to eq("Don't know what to do with \"bar\" at line 1 char 4.")
     end
   end
   context 'when only parsing string prefix' do
     let(:parslet) { Parslet.str('foo') >> Parslet.str('bar') }
 
     it 'returns the first half on a prefix parse' do
-      parslet.parse('foobarbaz', prefix: true).should == 'foobar'
+      expect(parslet.parse('foobarbaz', prefix: true)).to eq('foobar')
     end
   end
 

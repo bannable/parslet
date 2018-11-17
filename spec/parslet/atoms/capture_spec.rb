@@ -14,10 +14,10 @@ describe Parslet::Atoms::Capture do
 
   it 'should capture simple results' do
     inject 'a', str('a').capture(:a)
-    context.captures[:a].should == 'a'
+    expect(context.captures[:a]).to eq('a')
   end
   it 'should capture complex results' do
     inject 'a', str('a').as(:b).capture(:a)
-    context.captures[:a].should == { b: 'a' }
+    expect(context.captures[:a]).to eq({ b: 'a' })
   end
 end

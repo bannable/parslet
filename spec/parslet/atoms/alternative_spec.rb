@@ -18,9 +18,9 @@ describe Parslet::Atoms::Alternative do
       let!(:chained) { alternative | str('c') }
 
       it 'is side-effect free' do
-        chained.should parse('c')
-        chained.should parse('a')
-        chained.should_not parse('d')
+        expect(chained).to parse('c')
+        expect(chained).to parse('a')
+        expect(chained).not_to parse('d')
       end
     end
   end

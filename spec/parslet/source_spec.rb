@@ -12,23 +12,23 @@ describe Parslet::Source do
         described_class.new('').consume(1)
       end
       it "should return 100 'a's when reading 100 chars" do
-        source.consume(100).should == 'a' * 100
+        expect(source.consume(100)).to eq('a' * 100)
       end
     end
     describe '<- #chars_left' do
       subject { source.chars_left }
 
-      it { should == 202 }
+      it { is_expected.to eq(202) }
       context 'after depleting the source' do
         before(:each) { source.consume(10_000) }
 
-        it { should == 0 }
+        it { is_expected.to eq(0) }
       end
     end
     describe '<- #pos' do
       subject { source.pos.charpos }
 
-      it { should == 0 }
+      it { is_expected.to eq(0) }
       context 'after reading a few bytes' do
         it 'should still be correct' do
           pos = 0
@@ -36,7 +36,7 @@ describe Parslet::Source do
             pos += (n = rand(1..10))
             source.consume(n)
 
-            source.pos.charpos.should == pos
+            expect(source.pos.charpos).to eq(pos)
           end
         end
       end
@@ -48,50 +48,50 @@ describe Parslet::Source do
         context "setting position #{pos}" do
           before(:each) { source.bytepos = pos }
 
-          it { should == pos }
+          it { is_expected.to eq(pos) }
         end
       end
     end
     describe '#chars_until' do
       it 'should return 100 chars before line end' do
-        source.chars_until("\n").should == 100
+        expect(source.chars_until("\n")).to eq(100)
       end
     end
     describe '<- #column & #line' do
       subject { source.line_and_column }
 
-      it { should == [1, 1] }
+      it { is_expected.to eq([1, 1]) }
 
       context 'on the first line' do
         it 'should increase column with every read' do
           10.times do |i|
-            source.line_and_column.last.should == 1 + i
+            expect(source.line_and_column.last).to eq(1 + i)
             source.consume(1)
           end
         end
       end
       context 'on the second line' do
         before(:each) { source.consume(101) }
-        it { should == [2, 1] }
+        it { is_expected.to eq([2, 1]) }
       end
       context 'after reading everything' do
         before(:each) { source.consume(10_000) }
 
         context 'when seeking to 9' do
           before(:each) { source.bytepos = 9 }
-          it { should == [1, 10] }
+          it { is_expected.to eq([1, 10]) }
         end
         context 'when seeking to 100' do
           before(:each) { source.bytepos = 100 }
-          it { should == [1, 101] }
+          it { is_expected.to eq([1, 101]) }
         end
         context 'when seeking to 101' do
           before(:each) { source.bytepos = 101 }
-          it { should == [2, 1] }
+          it { is_expected.to eq([2, 1]) }
         end
         context 'when seeking to 102' do
           before(:each) { source.bytepos = 102 }
-          it { should == [2, 2] }
+          it { is_expected.to eq([2, 2]) }
         end
         context 'when seeking beyond eof' do
           it 'should not throw an error' do
@@ -109,27 +109,27 @@ describe Parslet::Source do
             source.consume(1)
           end
 
-          @results.entries.size.should == 202
+          expect(@results.entries.size).to eq(202)
           @results
         end
 
         context 'when using pos argument' do
           it 'should return the same results' do
             results.each do |pos, result|
-              source.line_and_column(pos).should == result
+              expect(source.line_and_column(pos)).to eq(result)
             end
           end
         end
         it 'should give the same results when seeking' do
           results.each do |pos, result|
             source.bytepos = pos
-            source.line_and_column.should == result
+            expect(source.line_and_column).to eq(result)
           end
         end
         it 'should give the same results when reading' do
           cur = source.bytepos = 0
           while source.chars_left > 0
-            source.line_and_column.should == results[cur]
+            expect(source.line_and_column).to eq(results[cur])
             cur += 1
             source.consume(1)
           end
@@ -146,22 +146,22 @@ describe Parslet::Source do
     end
 
     it 'should read characters, not bytes' do
-      source.should match(r('é'))
+      expect(source).to match(r('é'))
       source.consume(1)
-      source.pos.charpos.should == 1
-      source.bytepos.should == 2
+      expect(source.pos.charpos).to eq(1)
+      expect(source.bytepos).to eq(2)
 
-      source.should match(r('ö'))
+      expect(source).to match(r('ö'))
       source.consume(1)
-      source.pos.charpos.should == 2
-      source.bytepos.should == 4
+      expect(source.pos.charpos).to eq(2)
+      expect(source.bytepos).to eq(4)
 
-      source.should match(r('変'))
+      expect(source).to match(r('変'))
       source.consume(1)
 
       source.consume(2)
-      source.chars_left.should == 0
-      source.chars_left.should == 0
+      expect(source.chars_left).to eq(0)
+      expect(source.chars_left).to eq(0)
     end
   end
 end

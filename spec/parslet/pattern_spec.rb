@@ -40,7 +40,7 @@ describe Parslet::Pattern do
   #
   def with_match_locals(pattern, &block)
     bindings = p(pattern).match(exp)
-    bindings.should_not be_nil
+    expect(bindings).not_to be_nil
 
     yield(bindings) if block
   end
@@ -62,21 +62,21 @@ describe Parslet::Pattern do
       it 'should not modify the original bindings hash' do
         h = {}
         b = pattern.match('a', h)
-        h.size.should == 0
-        b.size.should == 1
+        expect(h.size).to eq(0)
+        expect(b.size).to eq(1)
       end
       it 'should return nil when no match succeeds' do
-        pattern.match([], foo: :bar).should be_nil
+        expect(pattern.match([], foo: :bar)).to be_nil
       end
       context "when matching simple(:x) against 'a'" do
         let(:bindings) { pattern.match(t('a'), foo: :bar) }
 
-        before(:each) { bindings.should_not be_nil }
+        before(:each) { expect(bindings).not_to be_nil }
         it 'should return the injected bindings' do
-          bindings[:foo].should == :bar
+          expect(bindings[:foo]).to eq(:bar)
         end
         it 'should return the new bindings' do
-          bindings[:x].should == 'a'
+          expect(bindings[:x]).to eq('a')
         end
       end
     end
@@ -84,7 +84,7 @@ describe Parslet::Pattern do
       let(:exp) { 'aaaa' }
 
       it 'should match simple strings' do
-        exp.should match_with_bind(simple(:x), x: 'aaaa')
+        expect(exp).to match_with_bind(simple(:x), x: 'aaaa')
       end
     end
     context "simple hash {:a => 'b'}" do
@@ -94,13 +94,13 @@ describe Parslet::Pattern do
       end
 
       it 'should not match {:a => simple(:x), :b => simple(:y)}' do
-        exp.should_not detect(a: simple(:x), b: simple(:y))
+        expect(exp).not_to detect(a: simple(:x), b: simple(:y))
       end
       it "should match {:a => simple(:x)}, binding 'x' to the first argument" do
-        exp.should match_with_bind({ a: simple(:x) }, x: 'b')
+        expect(exp).to match_with_bind({ a: simple(:x) }, x: 'b')
       end
       it "should match {:a => 'b'} with no binds" do
-        exp.should match_with_bind({ a: 'b' }, {})
+        expect(exp).to match_with_bind({ a: 'b' }, {})
       end
     end
     context "a more complex hash {:a => {:b => 'c'}}" do
@@ -110,15 +110,15 @@ describe Parslet::Pattern do
       end
 
       it 'should match wholly with {:a => {:b => simple(:x)}}' do
-        exp.should match_with_bind({ a: { b: simple(:x) } }, x: 'c')
+        expect(exp).to match_with_bind({ a: { b: simple(:x) } }, x: 'c')
       end
       it 'should match wholly with {:a => subtree(:t)}' do
         with_match_locals(a: subtree(:t)) do |dict|
-          dict[:t].should == { b: 'c' }
+          expect(dict[:t]).to eq({ b: 'c' })
         end
       end
       it 'should not bind subtrees to variables in {:a => simple(:x)}' do
-        p(a: simple(:x)).should_not detect(exp)
+        expect(p(a: simple(:x))).not_to detect(exp)
       end
     end
     context "a more complex hash {:a => 'a', :b => 'b'}" do
@@ -128,10 +128,10 @@ describe Parslet::Pattern do
       end
 
       it 'should not match partially' do
-        Parslet::Pattern.new(a: simple(:x)).match(exp).should be_nil
+        expect(Parslet::Pattern.new(a: simple(:x)).match(exp)).to be_nil
       end
       it 'should match completely' do
-        exp.should match_with_bind({ a: simple(:x), b: simple(:y) },
+        expect(exp).to match_with_bind({ a: simple(:x), b: simple(:y) },
                                    x: 'a',
                                    y: 'b')
       end
@@ -140,7 +140,7 @@ describe Parslet::Pattern do
       let(:exp) { %w[a b c] }
 
       it 'should match all elements at once' do
-        exp.should match_with_bind(
+        expect(exp).to match_with_bind(
           [simple(:x), simple(:y), simple(:z)],
           x: 'a', y: 'b', z: 'c'
         )
@@ -153,13 +153,13 @@ describe Parslet::Pattern do
       end
 
       it 'should match both elements simple(:x), simple(:y)' do
-        exp.should match_with_bind(
+        expect(exp).to match_with_bind(
           { a: simple(:x), b: simple(:y) },
           x: 'a', y: 'b'
         )
       end
       it 'should not match a constrained match (simple(:x) != simple(:y))' do
-        exp.should_not detect(a: simple(:x), b: simple(:x))
+        expect(exp).not_to detect(a: simple(:x), b: simple(:x))
       end
     end
     context "{:a => 'a', :b => 'a'}" do
@@ -169,7 +169,7 @@ describe Parslet::Pattern do
       end
 
       it 'should match constrained pattern' do
-        exp.should match_with_bind(
+        expect(exp).to match_with_bind(
           { a: simple(:x), b: simple(:x) },
           x: 'a'
         )
@@ -185,13 +185,13 @@ describe Parslet::Pattern do
       end
 
       it 'should verify constraints over several subtrees' do
-        exp.should match_with_bind({
+        expect(exp).to match_with_bind({
                                      sub1: { a: simple(:x) },
                                      sub2: { a: simple(:x) }
                                    }, x: 'a')
       end
       it 'should return both bind variables simple(:x), simple(:y)' do
-        exp.should match_with_bind({
+        expect(exp).to match_with_bind({
                                      sub1: { a: simple(:x) },
                                      sub2: { a: simple(:y) }
                                    }, x: 'a', y: 'a')
@@ -207,13 +207,13 @@ describe Parslet::Pattern do
       end
 
       it 'should verify constraints over several subtrees' do
-        exp.should_not match_with_bind({
+        expect(exp).not_to match_with_bind({
                                          sub1: { a: simple(:x) },
                                          sub2: { a: simple(:x) }
                                        }, x: 'a')
       end
       it 'should return both bind variables simple(:x), simple(:y)' do
-        exp.should match_with_bind({
+        expect(exp).to match_with_bind({
                                      sub1: { a: simple(:x) },
                                      sub2: { a: simple(:y) }
                                    }, x: 'a', y: 'b')
@@ -226,7 +226,7 @@ describe Parslet::Pattern do
       end
 
       it 'should not match sequence(:x) (as a whole)' do
-        exp.should_not detect(sequence(:x))
+        expect(exp).not_to detect(sequence(:x))
       end
     end
     context "['x', 'y', 'z']" do
@@ -237,22 +237,22 @@ describe Parslet::Pattern do
 
       it 'should match [simple(:x), simple(:y), simple(:z)]' do
         with_match_locals([simple(:x), simple(:y), simple(:z)]) do |dict|
-          dict[:x].should == 'x'
-          dict[:y].should == 'y'
-          dict[:z].should == 'z'
+          expect(dict[:x]).to eq('x')
+          expect(dict[:y]).to eq('y')
+          expect(dict[:z]).to eq('z')
         end
       end
       it 'should match %w(x y z)' do
-        exp.should match_with_bind(%w[x y z], {})
+        expect(exp).to match_with_bind(%w[x y z], {})
       end
       it 'should not match [simple(:x), simple(:y), simple(:x)]' do
-        exp.should_not detect([simple(:x), simple(:y), simple(:x)])
+        expect(exp).not_to detect([simple(:x), simple(:y), simple(:x)])
       end
       it 'should not match [simple(:x), simple(:y)]' do
-        exp.should_not detect([simple(:x), simple(:y), simple(:x)])
+        expect(exp).not_to detect([simple(:x), simple(:y), simple(:x)])
       end
       it 'should match sequence(:x) (as array)' do
-        exp.should match_with_bind(sequence(:x), x: %w[x y z])
+        expect(exp).to match_with_bind(sequence(:x), x: %w[x y z])
       end
     end
     context '{:a => [1,2,3]}' do
@@ -262,16 +262,16 @@ describe Parslet::Pattern do
       end
 
       it 'should match :a => sequence(:x) (binding x to the whole array)' do
-        exp.should match_with_bind({ a: sequence(:x) }, x: [1, 2, 3])
+        expect(exp).to match_with_bind({ a: sequence(:x) }, x: [1, 2, 3])
       end
     end
     context 'with differently ordered hashes' do
       it 'should still match' do
-        t(a: 'a', b: 'b').should detect(a: 'a', b: 'b')
-        t(a: 'a', b: 'b').should detect(b: 'b', a: 'a')
+        expect(t(a: 'a', b: 'b')).to detect(a: 'a', b: 'b')
+        expect(t(a: 'a', b: 'b')).to detect(b: 'b', a: 'a')
 
-        t(b: 'b', a: 'a').should detect(b: 'b', a: 'a')
-        t(b: 'b', a: 'a').should detect(a: 'a', b: 'b')
+        expect(t(b: 'b', a: 'a')).to detect(b: 'b', a: 'a')
+        expect(t(b: 'b', a: 'a')).to detect(a: 'a', b: 'b')
       end
     end
   end

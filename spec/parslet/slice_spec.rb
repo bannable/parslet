@@ -20,38 +20,38 @@ describe Parslet::Slice do
     describe 'comparison' do
       it 'should be equal to other slices with the same attributes' do
         other = cslice('foobar', 40)
-        slice.should == other
-        other.should == slice
+        expect(slice).to eq(other)
+        expect(other).to eq(slice)
       end
       it 'should be equal to other slices (offset is irrelevant for comparison)' do
         other = cslice('foobar', 41)
-        slice.should == other
-        other.should == slice
+        expect(slice).to eq(other)
+        expect(other).to eq(slice)
       end
       it 'should be equal to a string with the same content' do
-        slice.should == 'foobar'
+        expect(slice).to eq('foobar')
       end
       it 'should be equal to a string (inversed operands)' do
-        'foobar'.should == slice
+        expect('foobar').to eq(slice)
       end
       it 'should not be equal to a string' do
-        slice.should_not equal('foobar')
+        expect(slice).not_to equal('foobar')
       end
       it 'should not be eql to a string' do
-        slice.should_not eql('foobar')
+        expect(slice).not_to eql('foobar')
       end
       it 'should not hash to the same number' do
-        slice.hash.should_not == 'foobar'.hash
+        expect(slice.hash).not_to eq('foobar'.hash)
       end
     end
     describe 'offset' do
       it 'should return the associated offset' do
-        slice.offset.should == 6
+        expect(slice.offset).to eq(6)
       end
       it 'should fail to return a line and column' do
-        lambda {
+        expect {
           slice.line_and_column
-        }.should raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
 
       context 'when constructed with a source' do
@@ -62,77 +62,77 @@ describe Parslet::Slice do
           )
         end
         it 'should return proper line and column' do
-          slice.line_and_column.should == [13, 14]
+          expect(slice.line_and_column).to eq([13, 14])
         end
       end
     end
     describe 'string methods' do
       describe 'matching' do
         it 'should match as a string would' do
-          slice.should match(/bar/)
-          slice.should match(/foo/)
+          expect(slice).to match(/bar/)
+          expect(slice).to match(/foo/)
 
           md = slice.match(/f(o)o/)
-          md.captures.first.should == 'o'
+          expect(md.captures.first).to eq('o')
         end
       end
       describe '<- #size' do
         subject { slice.size }
-        it { should == 6 }
+        it { is_expected.to eq(6) }
       end
       describe '<- #length' do
         subject { slice.length }
-        it { should == 6 }
+        it { is_expected.to eq(6) }
       end
       describe '<- #+' do
         let(:other) { cslice('baz', 10) }
         subject { slice + other }
 
         it 'should concat like string does' do
-          subject.size.should == 9
-          subject.should == 'foobarbaz'
-          subject.offset.should == 6
+          expect(subject.size).to eq(9)
+          expect(subject).to eq('foobarbaz')
+          expect(subject.offset).to eq(6)
         end
       end
     end
     describe 'conversion' do
       describe '<- #to_slice' do
         it 'should return self' do
-          slice.to_slice.should eq(slice)
+          expect(slice.to_slice).to eq(slice)
         end
       end
       describe '<- #to_sym' do
         it 'should return :foobar' do
-          slice.to_sym.should == :foobar
+          expect(slice.to_sym).to eq(:foobar)
         end
       end
       describe 'cast to Float' do
         it 'should return a float' do
-          Float(cslice('1.345', 11)).should == 1.345
+          expect(Float(cslice('1.345', 11))).to eq(1.345)
         end
       end
       describe 'cast to Integer' do
         it 'should cast to integer as a string would' do
           s = cslice('1234', 40)
-          Integer(s).should == 1234
-          s.to_i.should == 1234
+          expect(Integer(s)).to eq(1234)
+          expect(s.to_i).to eq(1234)
         end
         it 'should fail when Integer would fail on a string' do
-          -> { Integer(slice) }.should raise_error(ArgumentError, /invalid value/)
+          expect { Integer(slice) }.to raise_error(ArgumentError, /invalid value/)
         end
         it 'should turn into zero when a string would' do
-          slice.to_i.should == 0
+          expect(slice.to_i).to eq(0)
         end
       end
     end
     describe 'inspection and string conversion' do
       describe '#inspect' do
         subject { slice.inspect }
-        it { should == '"foobar"@6' }
+        it { is_expected.to eq('"foobar"@6') }
       end
       describe '#to_s' do
         subject { slice.to_s }
-        it { should == 'foobar' }
+        it { is_expected.to eq('foobar') }
       end
     end
     describe 'serializability' do

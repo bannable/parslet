@@ -43,10 +43,10 @@ describe Parslet::Expression::Treetop do
       context "exp(#{pattern.inspect})" do
         let(:parslet) { exp(pattern) }
         subject { parslet }
-        it { should parse(input) }
+        it { is_expected.to parse(input) }
         context 'string representation' do
           subject { exp(parslet.to_s) }
-          it { should parse(input, trace: true) }
+          it { is_expected.to parse(input, trace: true) }
         end
       end
     end
@@ -69,7 +69,7 @@ describe Parslet::Expression::Treetop do
     ].each_slice(2) do |pattern, input|
       context "exp(#{pattern.inspect})" do
         subject { exp(pattern) }
-        it { should_not parse(input) }
+        it { is_expected.not_to parse(input) }
       end
     end
   end

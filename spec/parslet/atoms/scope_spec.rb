@@ -22,6 +22,6 @@ describe Parslet::Atoms::Scope do
   it 'keeps values of captures outside' do
     captures[:f] = 'old_value'
     inject 'aa', aabb
-    captures[:f].should == 'old_value'
+    expect(captures[:f]).to eq('old_value')
   end
 end

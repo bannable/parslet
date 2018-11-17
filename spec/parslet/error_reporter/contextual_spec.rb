@@ -19,8 +19,8 @@ describe Parslet::ErrorReporter::Contextual do
     it 'returns the deepest cause' do
       flexmock(reporter)
         .should_receive(:deepest).and_return(:deepest)
-      reporter.err('parslet', fake_source, 'message')
-              .should == :deepest
+      expect(reporter.err('parslet', fake_source, 'message'))
+              .to eq(:deepest)
     end
   end
   describe '#err_at' do
@@ -34,8 +34,8 @@ describe Parslet::ErrorReporter::Contextual do
     it 'returns the deepest cause' do
       flexmock(reporter)
         .should_receive(:deepest).and_return(:deepest)
-      reporter.err('parslet', fake_source, 'message', 13)
-              .should == :deepest
+      expect(reporter.err('parslet', fake_source, 'message', 13))
+              .to eq(:deepest)
     end
   end
   describe '#deepest(cause)' do
@@ -46,7 +46,7 @@ describe Parslet::ErrorReporter::Contextual do
     context 'when there is no deepest cause yet' do
       let(:cause) { fake_cause }
       it 'returns the given cause' do
-        reporter.deepest(cause).should == cause
+        expect(reporter.deepest(cause)).to eq(cause)
       end
     end
     context 'when the previous cause is deeper (no relationship)' do
@@ -56,8 +56,8 @@ describe Parslet::ErrorReporter::Contextual do
       end
 
       it 'returns the previous cause' do
-        reporter.deepest(fake_cause(12))
-                .should == previous
+        expect(reporter.deepest(fake_cause(12)))
+                .to eq(previous)
       end
     end
     context 'when the previous cause is deeper (child)' do
@@ -68,7 +68,7 @@ describe Parslet::ErrorReporter::Contextual do
 
       it 'returns the given cause' do
         given = fake_cause(12, [previous])
-        reporter.deepest(given).should == given
+        expect(reporter.deepest(given)).to eq(given)
       end
     end
     context 'when the previous cause is shallower' do
@@ -79,7 +79,7 @@ describe Parslet::ErrorReporter::Contextual do
       it 'stores the cause as deepest' do
         deeper = fake_cause(14)
         reporter.deepest(deeper)
-        reporter.deepest_cause.should == deeper
+        expect(reporter.deepest_cause).to eq(deeper)
       end
     end
   end
@@ -94,8 +94,8 @@ describe Parslet::ErrorReporter::Contextual do
     it 'resets deepest cause on success of sibling expression' do
       flexmock(reporter)
         .should_receive(:deepest).and_return(:deepest)
-      reporter.err('parslet', fake_source, 'message')
-              .should == :deepest
+      expect(reporter.err('parslet', fake_source, 'message'))
+              .to eq(:deepest)
       flexmock(reporter)
         .should_receive(:reset).once
       reporter.succ(fake_source)
@@ -115,16 +115,16 @@ describe Parslet::ErrorReporter::Contextual do
       fake_cause.should_receive(:set_label).once
       flexmock(reporter)
         .should_receive(:deepest).and_return(fake_cause)
-      reporter.err(fake_atom, fake_source, 'message')
-              .should == fake_cause
+      expect(reporter.err(fake_atom, fake_source, 'message'))
+              .to eq(fake_cause)
     end
 
     it 'does not set label if atom does not have one' do
       flexmock(reporter)
         .should_receive(:deepest).and_return(:deepest)
       fake_atom.should_receive(:update_label).never
-      reporter.err(fake_atom, fake_source, 'message')
-              .should == :deepest
+      expect(reporter.err(fake_atom, fake_source, 'message'))
+              .to eq(:deepest)
     end
   end
 end

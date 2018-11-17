@@ -11,9 +11,9 @@ describe Parslet::Atoms::Repetition do
     describe '(min, max)' do
       subject { parslet.repeat(1, 2) }
 
-      it { should_not parse('') }
-      it { should parse('a') }
-      it { should parse('aa') }
+      it { is_expected.not_to parse('') }
+      it { is_expected.to parse('a') }
+      it { is_expected.to parse('aa') }
     end
     describe '0 times' do
       it 'raises an ArgumentError' do

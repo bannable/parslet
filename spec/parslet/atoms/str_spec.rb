@@ -9,7 +9,7 @@ describe Parslet::Atoms::Str do
 
   describe 'regression #1: multibyte characters' do
     it 'parses successfully (length check works)' do
-      str('あああ').should parse('あああ')
+      expect(str('あああ')).to parse('あああ')
     end
   end
 end

@@ -34,7 +34,7 @@ describe 'Result of a Parslet#parse' do
     ].each do |parslet, input, result|
       context parslet.inspect.to_s do
         it "should parse \"#{input}\" into \"#{result}\"" do
-          parslet.parse(input).should == result
+          expect(parslet.parse(input)).to eq(result)
         end
       end
     end

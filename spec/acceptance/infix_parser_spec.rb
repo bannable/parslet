@@ -30,40 +30,40 @@ describe 'Infix expression parsing' do
   describe '#integer' do
     let(:i) { p.integer }
     it 'parses integers' do
-      i.should parse('1')
-      i.should parse('123')
+      expect(i).to parse('1')
+      expect(i).to parse('123')
     end
     it 'consumes trailing white space' do
-      i.should parse('1   ')
-      i.should parse('134   ')
+      expect(i).to parse('1   ')
+      expect(i).to parse('134   ')
     end
     it "doesn't parse floats" do
-      i.should_not parse('1.3')
+      expect(i).not_to parse('1.3')
     end
   end
   describe '#multiplication' do
     let(:m) { p.expression }
     it 'parses simple multiplication' do
-      m.should parse('1*2').as(l: '1', o: '*', r: '2')
+      expect(m).to parse('1*2').as(l: '1', o: '*', r: '2')
     end
     it 'parses simple multiplication with spaces' do
-      m.should parse('1 * 2').as(l: '1 ', o: '* ', r: '2')
+      expect(m).to parse('1 * 2').as(l: '1 ', o: '* ', r: '2')
     end
     it 'parses division' do
-      m.should parse('1/2')
+      expect(m).to parse('1/2')
     end
   end
   describe '#addition' do
     let(:a) { p.expression }
 
     it 'parses simple addition' do
-      a.should parse('1+2')
+      expect(a).to parse('1+2')
     end
     it 'parses complex addition' do
-      a.should parse('1+2+3-4')
+      expect(a).to parse('1+2+3-4')
     end
     it 'parses a single element' do
-      a.should parse('1')
+      expect(a).to parse('1')
     end
   end
 
@@ -72,20 +72,21 @@ describe 'Infix expression parsing' do
 
     describe 'inspection' do
       it 'produces useful expressions' do
-        p.expression.parslet.inspect.should ==
+        expect(p.expression.parslet.inspect).to eq(
           'infix_expression(INTEGER, [MUL_OP, ADD_OP])'
+        )
       end
     end
     describe 'right associativity' do
       it 'produces trees that lean right' do
-        mo.should parse('1+2+3').as(
+        expect(mo).to parse('1+2+3').as(
           l: '1', o: '+', r: { l: '2', o: '+', r: '3' }
         )
       end
     end
     describe 'left associativity' do
       it 'produces trees that lean left' do
-        mo.should parse('1*2*3').as(
+        expect(mo).to parse('1*2*3').as(
           l: { l: '1', o: '*', r: '2' }, o: '*', r: '3'
         )
       end
@@ -97,7 +98,7 @@ describe 'Infix expression parsing' do
             mo.parse('1+')
           end
 
-          cause.ascii_tree.to_s.should == <<~ERROR
+          expect(cause.ascii_tree.to_s).to eq <<~ERROR
             INTEGER was expected at line 1 char 3.
             `- Failed to match sequence (DIGIT{1, } SPACE{0, }) at line 1 char 3.
                `- Expected at least 1 of DIGIT at line 1 char 3.
@@ -111,7 +112,7 @@ describe 'Infix expression parsing' do
             mo.parse('1%')
           end
 
-          cause.ascii_tree.to_s.should == <<~ERROR
+          expect(cause.ascii_tree.to_s).to eq <<~ERROR
             Don't know what to do with "%" at line 1 char 2.
           ERROR
         end
@@ -124,7 +125,7 @@ describe 'Infix expression parsing' do
     end
 
     it 'applies the reducer' do
-      InfixExpressionReducerParser.new.top.parse('a-a-a').should == { and: ['a', { and: %w[a a] }] }
+      expect(InfixExpressionReducerParser.new.top.parse('a-a-a')).to eq({ and: ['a', { and: %w[a a] }] })
     end
   end
 end
